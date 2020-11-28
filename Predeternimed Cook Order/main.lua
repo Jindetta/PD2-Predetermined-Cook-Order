@@ -13,31 +13,32 @@ if not PDCOMod then
             alex_1 = {
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
-                id = "heist_alex",
+                name = "heist_alex",
                 priority = 3 
             },
             rat = {
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
-                id = "heist_rat",
+                name = "heist_rat",
                 priority = 2
             },
             nail = {
                 routines = {101807},
                 dialogue = {100091, 101968, 101969, 101970},
-                id = "heist_nail",
+                name = "heist_nail",
                 priority = 1
             },
             mex_cooking = {
                 routines = {185989, 186989},
                 dialogue = {185878, 186878, 185879, 186879, 185935, 186935, 185976, 186976, 186036, 187036},
-                id = "heist_mex_cooking",
+                name = "heist_mex_cooking",
                 priority = 0
             }
         },
 
         id = "pdco_mod_id",
         desc = "pdco_mod_desc",
+
         level_id = "pdco_mod_level_desc"
     }
 
@@ -93,7 +94,7 @@ if not PDCOMod then
                 local localization_strings = {
                     [mod_data.id] = "Predetermined Cook Order",
                     [mod_data.desc] = "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
-                    [mod_data.level_id] = "Enable Predetermined Cook order for \"$name\".\nLevel must be restarted for changes to apply."
+                    [mod_data.level_id] = "Enable Predetermined Cook order for \"$1\".\nLevel must be restarted for changes to apply."
                 }
 
                 self:add_localized_strings(localization_strings)
@@ -116,10 +117,10 @@ if not PDCOMod then
                 end
             end)
 
-            Hooks:Add("MenuManagerPopulateCustomMenus", "ForcedRNG_PopulateMenu", function()        
+            Hooks:Add("MenuManagerPopulateCustomMenus", "ForcedRNG_PopulateMenu", function()
                 for level_id, data in pairs(mod_data.levels) do
-                    local title_text = managers.localization:text(data.id)
-                    local description_text = managers.localization:text(mod_data.level_id, {name = title_text})
+                    local title_text = managers.localization:text(data.name)
+                    local description_text = managers.localization:text(mod_data.level_id, {title_text})
 
                     MenuHelper:AddToggle({
                         title = title_text,
@@ -138,7 +139,7 @@ if not PDCOMod then
                 nodes[mod_data.id] = MenuHelper:BuildMenu(mod_data.id, {back_callback = mod_data.id})
                 MenuHelper:AddMenuItem(nodes.blt_options, mod_data.id, mod_data.id, mod_data.desc)
             end)
-        else
+        elseif LuaNetworking:IsHost() then
             local level_id = Global.level_data and Global.level_data.level_id
 
             if PDCOMod:included(level_id) then
