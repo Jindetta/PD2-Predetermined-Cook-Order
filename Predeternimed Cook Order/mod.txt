@@ -2,8 +2,8 @@
     "name" : "Predetermined Cook Order",
     "description" : "Enables 'Muriatic Acid, Caustic Soda and Hydrogen Chloride' cook order globally.",
     "author" : "Jindetta",
-    "version" : 1.0,
     "blt_version" : 2,
+    "version" : 1.1,
     "priority": 0,
     "hooks" : [
         {
@@ -13,6 +13,14 @@
         {
             "hook_id" : "lib/managers/missionmanager",
             "script_path" : "main.lua"
+        }
+    ],
+    "updates" : [
+        {
+            "identifier" : "PDCOMod-by-Jindetta",
+            "host" : {
+                "meta" : "https://raw.githubusercontent.com/Jindetta/PD2-Predetermined-Cook-Order/master/meta.json"
+            }
         }
     ]
 }

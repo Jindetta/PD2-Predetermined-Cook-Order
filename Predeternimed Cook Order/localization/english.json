@@ -1,0 +1,5 @@
+{
+    "pdco_mod_id": "Predetermined Cook Order",
+    "pdco_mod_desc": "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
+    "pdco_mod_level_desc": "Enable Predetermined Cook order for \"$1\".\nLevel must be restarted for changes to apply."
+}

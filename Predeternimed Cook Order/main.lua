@@ -1,11 +1,6 @@
 if not PDCOMod then
     PDCOMod = PDCOMod or {
-        lang_path = ModPath .. "localization/",
-        settings_path = SavePath .. "predetermined_cook_order.json",
-
-        _setting_data = {
-            exclusions = {}
-        }
+        exclusions = {}
     }
 
     local mod_data = {
@@ -13,40 +8,74 @@ if not PDCOMod then
             alex_1 = {
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
-                id = "heist_alex",
+                name = "heist_alex",
                 priority = 3 
             },
             rat = {
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
-                id = "heist_rat",
+                name = "heist_rat",
                 priority = 2
             },
             nail = {
                 routines = {101807},
                 dialogue = {100091, 101968, 101969, 101970},
-                id = "heist_nail",
+                name = "heist_nail",
                 priority = 1
             },
             mex_cooking = {
                 routines = {185989, 186989},
                 dialogue = {185878, 186878, 185879, 186879, 185935, 186935, 185976, 186976, 186036, 187036},
-                id = "heist_mex_cooking",
+                name = "heist_mex_cooking",
                 priority = 0
             }
         },
 
         id = "pdco_mod_id",
         desc = "pdco_mod_desc",
-        level_id = "pdco_mod_level_desc"
+        level_desc = "pdco_mod_level_desc",
+
+        lang_path = ModPath .. "localization/",
+        settings_path = SavePath .. "PDCO_data.json"
     }
 
+    function PDCOMod:load_language()
+        local system_key = SystemInfo:language():key()
+        local blt_index = LuaModManager:GetLanguageIndex()
+        local blt_supported, system_language, blt_language = {
+            "english",
+            "chinese_traditional",
+            "german",
+            "spanish",
+            "french",
+            "indonesian",
+            "turkish",
+            "russian",
+            "chinese_simplified"
+        }
+
+        for key, name in ipairs(file.GetFiles(mod_data.lang_path) or {}) do
+            key = name:gsub("%.json$", ""):lower()
+
+            if blt_supported[blt_index] == key then
+                blt_language = mod_data.lang_path .. name
+            end
+
+            if key ~= "english" and system_key == key:key() then
+                system_language = mod_data.lang_path .. name
+                break
+            end
+        end
+
+        return system_language or blt_language or ""
+    end
+
     function PDCOMod:save()
-        local f = io.open(self.settings_path, "w+")
+        local f = io.open(mod_data.settings_path, "w+")
 
         if type(f) == "userdata" then
-            if self:validate(self._setting_data) then
-                f:write(json.encode(self._setting_data))
+            if type(self) == "table" then
+                f:write(json.encode(self))
             end
 
             f:close()
@@ -54,49 +83,35 @@ if not PDCOMod then
     end
 
     function PDCOMod:load()
-        local f = io.open(self.settings_path, "r")
+        local f = io.open(mod_data.settings_path, "r")
 
         if type(f) == "userdata" then
             local valid, data = pcall(json.decode, f:read("*a"))
 
-            if valid and self:validate(data) then
-                self._setting_data = data
+            if valid and type(data) == "table" then
+                self = data
             end
 
             f:close()
         end
     end
 
-    function PDCOMod:set_excluded(level_id, value)
-        if self:validate(self._setting_data) then
-            self._setting_data.exclusions[level_id] = value
-        end
-    end
-
     function PDCOMod:included(level_id)
-        local has_level = mod_data.levels[level_id]
-
-        if has_level and self:validate(self._setting_data) then
-            return not self._setting_data.exclusions[level_id]
-        end
-
-        return has_level
-    end
-
-    function PDCOMod:validate(data)
-        return type(data) == "table" and type(data.exclusions) == "table"
+        return type(mod_data.levels[level_id]) == "table" and not table.contains(self.exclusions, level_id)
     end
 
     function PDCOMod:init()
         if RequiredScript == "lib/managers/menumanager" then
-            Hooks:Add("LocalizationManagerPostInit", "PDCO_LocalizationInit", function(self)
-                local localization_strings = {
-                    [mod_data.id] = "Predetermined Cook Order",
-                    [mod_data.desc] = "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
-                    [mod_data.level_id] = "Enable Predetermined Cook order for \"$name\".\nLevel must be restarted for changes to apply."
-                }
+            Hooks:Add("LocalizationManagerPostInit", "PDCO_LocalizationInit", function(manager)
+                manager:add_localized_strings(
+                    {
+                        [mod_data.id] = "Predetermined Cook Order",
+                        [mod_data.desc] = "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
+                        [mod_data.level_desc] = "Enable Predetermined Cook order for \"$1\".\nLevel must be restarted for changes to apply."
+                    }
+                )
 
-                self:add_localized_strings(localization_strings)
+                manager:load_localization_file(self:load_language())
             end)
 
             Hooks:Add("MenuManagerSetupCustomMenus", "PDCO_SetupMenu", function()
@@ -106,31 +121,38 @@ if not PDCOMod then
                     if item then
                         for level_id in pairs(mod_data.levels) do
                             if item:name() == level_id then
-                                PDCOMod:set_excluded(level_id, item:value() == "off")
+                                if item:value() == "off" then
+                                    table.insert(self.exclusions, level_id)
+                                else
+                                    table.delete(self.exclusions, level_id)
+                                end
+
                                 break
                             end
                         end
                     else
-                        PDCOMod:save()
+                        self:save()
                     end
                 end
             end)
 
-            Hooks:Add("MenuManagerPopulateCustomMenus", "ForcedRNG_PopulateMenu", function()        
+            Hooks:Add("MenuManagerPopulateCustomMenus", "ForcedRNG_PopulateMenu", function()
                 for level_id, data in pairs(mod_data.levels) do
-                    local title_text = managers.localization:text(data.id)
-                    local description_text = managers.localization:text(mod_data.level_id, {name = title_text})
+                    local title_text = managers.localization:text(data.name)
+                    local description_text = managers.localization:text(mod_data.level_desc, {title_text})
 
-                    MenuHelper:AddToggle({
-                        title = title_text,
-                        desc = description_text,
-                        value = PDCOMod:included(level_id),
-                        priority = data.priority,
-                        callback = mod_data.id,
-                        menu_id = mod_data.id,
-                        localized = false,
-                        id = level_id
-                    })
+                    MenuHelper:AddToggle(
+                        {
+                            title = title_text,
+                            desc = description_text,
+                            value = self:included(level_id),
+                            priority = data.priority,
+                            callback = mod_data.id,
+                            menu_id = mod_data.id,
+                            localized = false,
+                            id = level_id
+                        }
+                    )
                 end
             end)
 
@@ -138,19 +160,19 @@ if not PDCOMod then
                 nodes[mod_data.id] = MenuHelper:BuildMenu(mod_data.id, {back_callback = mod_data.id})
                 MenuHelper:AddMenuItem(nodes.blt_options, mod_data.id, mod_data.id, mod_data.desc)
             end)
-        else
+        elseif LuaNetworking:IsHost() then
             local level_id = Global.level_data and Global.level_data.level_id
 
-            if PDCOMod:included(level_id) then
-                local level_data = mod_data.levels[level_id] or {}
+            if self:included(level_id) then
+                local level_data = mod_data.levels[level_id]
 
                 Hooks:PostHook(MissionScriptElement, "init", "PDCO_ElementInit", function(self, _, data)
-                    if data.class == "ElementRandom" and table.contains(level_data.routines or {}, data.id) then
+                    if data.class == "ElementRandom" and table.contains(level_data.routines, data.id) then
                         function self:_get_random_elements()
                             return table.remove(self._unused_randoms, 1)
                         end
-                    elseif data.class == "ElementDialogue" and table.contains(level_data.dialogue or {}, data.id) then
-                        self:set_enabled(PDCOMod._setting_data.allow_dialogue and true or false)
+                    elseif data.class == "ElementDialogue" and table.contains(level_data.dialogue, data.id) then
+                        self:set_enabled(false)
                     end
                 end)
             end
