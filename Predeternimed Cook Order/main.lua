@@ -102,7 +102,7 @@ if not PDCOMod then
 
     function PDCOMod:init()
         if RequiredScript == "lib/managers/menumanager" then
-            Hooks:Add("LocalizationManagerPostInit", "PDCO_LocalizationInit", function(manager)
+            Hooks:Add("LocalizationManagerPostInit", "PDCOMod_LocalizationInit", function(manager)
                 manager:add_localized_strings(
                     {
                         [mod_data.id] = "Predetermined Cook Order",
@@ -114,7 +114,7 @@ if not PDCOMod then
                 manager:load_localization_file(self:load_language())
             end)
 
-            Hooks:Add("MenuManagerSetupCustomMenus", "PDCO_SetupMenu", function()
+            Hooks:Add("MenuManagerSetupCustomMenus", "PDCOMod_SetupMenu", function()
                 MenuHelper:NewMenu(mod_data.id)
 
                 MenuCallbackHandler[mod_data.id] = function(_, item)
@@ -136,7 +136,7 @@ if not PDCOMod then
                 end
             end)
 
-            Hooks:Add("MenuManagerPopulateCustomMenus", "ForcedRNG_PopulateMenu", function()
+            Hooks:Add("MenuManagerPopulateCustomMenus", "PDCOMod_PopulateMenu", function()
                 for level_id, data in pairs(mod_data.levels) do
                     local title_text = managers.localization:text(data.name)
                     local description_text = managers.localization:text(mod_data.level_desc, {title_text})
@@ -156,7 +156,7 @@ if not PDCOMod then
                 end
             end)
 
-            Hooks:Add("MenuManagerBuildCustomMenus", "PDCO_BuildMenu", function(_, nodes)
+            Hooks:Add("MenuManagerBuildCustomMenus", "PDCOMod_BuildMenu", function(_, nodes)
                 nodes[mod_data.id] = MenuHelper:BuildMenu(mod_data.id, {back_callback = mod_data.id})
                 MenuHelper:AddMenuItem(nodes.blt_options, mod_data.id, mod_data.id, mod_data.desc)
             end)
@@ -166,7 +166,7 @@ if not PDCOMod then
             if self:included(level_id) then
                 local level_data = mod_data.levels[level_id]
 
-                Hooks:PostHook(MissionScriptElement, "init", "PDCO_ElementInit", function(self, _, data)
+                Hooks:PostHook(MissionScriptElement, "init", "PDCOMod_ElementInit", function(self, _, data)
                     if data.class == "ElementRandom" and table.contains(level_data.routines, data.id) then
                         function self:_get_random_elements()
                             return table.remove(self._unused_randoms, 1)
