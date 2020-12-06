@@ -43,15 +43,7 @@ if not PDCOMod then
         local system_key = SystemInfo:language():key()
         local blt_index = LuaModManager:GetLanguageIndex()
         local blt_supported, system_language, blt_language = {
-            "english",
-            "chinese_traditional",
-            "german",
-            "spanish",
-            "french",
-            "indonesian",
-            "turkish",
-            "russian",
-            "chinese_simplified"
+            "english", "chinese_traditional", "german", "spanish", "french", "indonesian", "turkish", "russian", "chinese_simplified"
         }
 
         for key, name in ipairs(file.GetFiles(mod_data.lang_path) or {}) do
@@ -74,8 +66,10 @@ if not PDCOMod then
         local f = io.open(mod_data.settings_path, "w+")
 
         if type(f) == "userdata" then
-            if type(self) == "table" then
-                f:write(json.encode(self))
+            local valid, data = pcall(json.encode, self)
+
+            if valid and type(data) == "string" then
+                f:write(data)
             end
 
             f:close()
