@@ -1,7 +1,6 @@
 if not PDCOMod then
-    PDCOMod = PDCOMod or {
-        exclusions = {}
-    }
+    local Self = {}
+    Self.exclusions = {}
 
     local mod_data = {
         levels = {
@@ -39,7 +38,7 @@ if not PDCOMod then
         settings_path = SavePath .. "PDCO_data.json"
     }
 
-    function PDCOMod:load_language()
+    function Self.load_language()
         local system_key = SystemInfo:language():key()
         local blt_index = LuaModManager:GetLanguageIndex()
         local blt_supported, system_language, blt_language = {
@@ -62,11 +61,11 @@ if not PDCOMod then
         return system_language or blt_language or ""
     end
 
-    function PDCOMod:save()
+    function Self.save()
         local f = io.open(mod_data.settings_path, "w+")
 
         if type(f) == "userdata" then
-            local valid, data = pcall(json.encode, self)
+            local valid, data = pcall(json.encode, Self)
 
             if valid and type(data) == "string" then
                 f:write(data)
@@ -76,28 +75,28 @@ if not PDCOMod then
         end
     end
 
-    function PDCOMod:load()
+    function Self.load()
         local f = io.open(mod_data.settings_path, "r")
 
         if type(f) == "userdata" then
             local valid, data = pcall(json.decode, f:read("*a"))
 
             if valid and type(data) == "table" then
-                self = data
+                Self = data
             end
 
             f:close()
         end
     end
 
-    function PDCOMod:included(level_id)
-        return type(mod_data.levels[level_id]) == "table" and not table.contains(self.exclusions, level_id)
+    function Self.included(level_id)
+        return type(mod_data.levels[level_id]) == "table" and not table.contains(Self.exclusions, level_id)
     end
 
-    function PDCOMod:init()
+    function Self.init()
         if RequiredScript == "lib/managers/menumanager" then
-            Hooks:Add("LocalizationManagerPostInit", "PDCOMod_LocalizationInit", function(manager)
-                manager:add_localized_strings(
+            Hooks:Add("LocalizationManagerPostInit", "PDCOMod_LocalizationInit", function(self)
+                self:add_localized_strings(
                     {
                         [mod_data.id] = "Predetermined Cook Order",
                         [mod_data.desc] = "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
@@ -105,7 +104,7 @@ if not PDCOMod then
                     }
                 )
 
-                manager:load_localization_file(self:load_language())
+                self:load_localization_file(Self.load_language())
             end)
 
             Hooks:Add("MenuManagerSetupCustomMenus", "PDCOMod_SetupMenu", function()
@@ -116,16 +115,16 @@ if not PDCOMod then
                         for level_id in pairs(mod_data.levels) do
                             if item:name() == level_id then
                                 if item:value() == "off" then
-                                    table.insert(self.exclusions, level_id)
+                                    table.insert(Self.exclusions, level_id)
                                 else
-                                    table.delete(self.exclusions, level_id)
+                                    table.delete(Self.exclusions, level_id)
                                 end
 
                                 break
                             end
                         end
                     else
-                        self:save()
+                        Self.save()
                     end
                 end
             end)
@@ -139,7 +138,7 @@ if not PDCOMod then
                         {
                             title = title_text,
                             desc = description_text,
-                            value = self:included(level_id),
+                            value = Self.included(level_id),
                             priority = data.priority,
                             callback = mod_data.id,
                             menu_id = mod_data.id,
@@ -157,7 +156,7 @@ if not PDCOMod then
         elseif Network:is_server() then
             local level_id = Global.level_data and Global.level_data.level_id
 
-            if self:included(level_id) then
+            if Self.included(level_id) then
                 local level_data = mod_data.levels[level_id]
 
                 Hooks:PostHook(MissionScriptElement, "init", "PDCOMod_ElementInit", function(self, _, data)
@@ -173,7 +172,8 @@ if not PDCOMod then
         end
     end
 
-    PDCOMod:load()
+    PDCOMod = Self
+    Self.load()
 end
 
 PDCOMod:init()
