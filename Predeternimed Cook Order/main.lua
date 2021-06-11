@@ -65,7 +65,7 @@ if not PDCOMod then
         local f = io.open(mod_data.settings_path, "w+")
 
         if type(f) == "userdata" then
-            local valid, data = pcall(json.encode, Self)
+            local valid, data = pcall(json.encode, Self.exclusions)
 
             if valid and type(data) == "string" then
                 f:write(data)
@@ -82,7 +82,7 @@ if not PDCOMod then
             local valid, data = pcall(json.decode, f:read("*a"))
 
             if valid and type(data) == "table" then
-                Self = data
+                Self.exclusions = data
             end
 
             f:close()
@@ -99,8 +99,8 @@ if not PDCOMod then
                 self:add_localized_strings(
                     {
                         [mod_data.id] = "Predetermined Cook Order",
-                        [mod_data.desc] = "Predetermined Cook Order settings.\nEnables \"Muriatic Acid, Caustic Soda and Hydrogen Chloride\" cook order globally.",
-                        [mod_data.level_desc] = "Enable Predetermined Cook order for \"$1\".\nLevel must be restarted for changes to apply."
+                        [mod_data.desc] = "Open mod settings.",
+                        [mod_data.level_desc] = "Enable for \"$1\".\nLevel must be restarted for changes to apply."
                     }
                 )
 
@@ -176,4 +176,4 @@ if not PDCOMod then
     Self.load()
 end
 
-PDCOMod:init()
+PDCOMod.init()
