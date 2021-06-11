@@ -154,7 +154,7 @@ if not PDCOMod then
                 nodes[mod_data.id] = MenuHelper:BuildMenu(mod_data.id, {back_callback = mod_data.id})
                 MenuHelper:AddMenuItem(nodes.blt_options, mod_data.id, mod_data.id, mod_data.desc)
             end)
-        elseif LuaNetworking:IsHost() then
+        elseif Network:is_server() then
             local level_id = Global.level_data and Global.level_data.level_id
 
             if self:included(level_id) then
