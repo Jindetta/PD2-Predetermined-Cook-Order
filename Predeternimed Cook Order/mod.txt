@@ -3,7 +3,7 @@
     "description" : "Enables 'Muriatic Acid, Caustic Soda and Hydrogen Chloride' cook order globally.",
     "author" : "Jindetta, 99ultra (support for Custom Heist)",
     "blt_version" : 2,
-    "version" : 1.3,
+    "version" : 1.31,
     "priority": 0,
     "hooks" : [
         {
