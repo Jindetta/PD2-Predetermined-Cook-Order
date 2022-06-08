@@ -106,7 +106,7 @@ if not PDCOMod then
                     {
                         [mod_data.id] = "Predetermined Cook Order",
                         [mod_data.desc] = "Open mod settings.",
-                        [mod_data.level_desc] = "Enable for \"$1\".\nLevel must be restarted for changes to apply."
+                        [mod_data.level_desc] = "Enable for \"$name\".\nLevel must be restarted for changes to apply."
                     }
                 )
 
