@@ -1,5 +1,5 @@
 {
     "pdco_mod_id": "Predetermined Cook Order",
     "pdco_mod_desc": "Open mod settings.",
-    "pdco_mod_level_desc": "Enable for \"$1\".\nLevel must be restarted for changes to apply."
+    "pdco_mod_level_desc": "Enable for \"$name\".\nLevel must be restarted for changes to apply."
 }

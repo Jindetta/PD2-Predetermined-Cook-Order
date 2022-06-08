@@ -8,12 +8,18 @@ if not PDCOMod then
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
                 name = "heist_alex",
-                priority = 3 
+                priority = 4
             },
             rat = {
                 routines = {100732},
                 dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
                 name = "heist_rat",
+                priority = 3
+            },
+            ratdaylight = {
+                routines = {100732},
+                dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
+                name = "heist_ratdaylight_name",
                 priority = 2
             },
             nail = {
@@ -131,21 +137,23 @@ if not PDCOMod then
 
             Hooks:Add("MenuManagerPopulateCustomMenus", "PDCOMod_PopulateMenu", function()
                 for level_id, data in pairs(mod_data.levels) do
-                    local title_text = managers.localization:text(data.name)
-                    local description_text = managers.localization:text(mod_data.level_desc, {title_text})
+                    if table.contains(tweak_data.levels._level_index, level_id) then
+                        local title_text = managers.localization:text(data.name)
+                        local description_text = managers.localization:text(mod_data.level_desc, {name = title_text})
 
-                    MenuHelper:AddToggle(
-                        {
-                            title = title_text,
-                            desc = description_text,
-                            value = Self.included(level_id),
-                            priority = data.priority,
-                            callback = mod_data.id,
-                            menu_id = mod_data.id,
-                            localized = false,
-                            id = level_id
-                        }
-                    )
+                        MenuHelper:AddToggle(
+                            {
+                                title = title_text,
+                                desc = description_text,
+                                value = Self.included(level_id),
+                                priority = data.priority,
+                                callback = mod_data.id,
+                                menu_id = mod_data.id,
+                                localized = false,
+                                id = level_id
+                            }
+                        )
+                    end
                 end
             end)
 
