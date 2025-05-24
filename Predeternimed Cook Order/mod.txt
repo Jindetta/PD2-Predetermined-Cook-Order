@@ -1,25 +1,25 @@
 {
-    "name" : "Predetermined Cook Order",
-    "description" : "Enables 'Muriatic Acid, Caustic Soda and Hydrogen Chloride' cook order globally.",
-    "author" : "Jindetta, 99ultra (support for Custom Heist)",
-    "blt_version" : 2,
-    "version" : 1.31,
+    "name": "Predetermined Cook Order",
+    "description": "Enables 'Muriatic Acid, Caustic Soda and Hydrogen Chloride' cook order globally.",
+    "author": "Jindetta, 99ultra (support for Custom Heist)",
+    "version": "1.35",
+    "blt_version": 2,
     "priority": 0,
-    "hooks" : [
+    "hooks": [
         {
-            "hook_id" : "lib/managers/menumanager",
-            "script_path" : "main.lua"
+            "hook_id": "lib/managers/menumanager",
+            "script_path": "main.lua"
         },
         {
-            "hook_id" : "lib/managers/missionmanager",
-            "script_path" : "main.lua"
+            "hook_id": "lib/managers/missionmanager",
+            "script_path": "main.lua"
         }
     ],
-    "updates" : [
+    "updates": [
         {
-            "identifier" : "PDCOMod-by-Jindetta",
+            "identifier": "PDCOMod-by-Jindetta",
             "host" : {
-                "meta" : "https://raw.githubusercontent.com/Jindetta/PD2-Predetermined-Cook-Order/master/meta.json"
+                "meta": "https://raw.githubusercontent.com/Jindetta/PD2-Predetermined-Cook-Order/master/meta.json"
             }
         }
     ]

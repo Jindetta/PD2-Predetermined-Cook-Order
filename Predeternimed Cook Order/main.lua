@@ -6,31 +6,31 @@ if not PDCOMod then
         levels = {
             alex_1 = {
                 routines = {100732},
-                dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
+                dialogue = {100768, 100766, 100767, 100321},
                 name = "heist_alex",
                 priority = 4
             },
             rat = {
                 routines = {100732},
-                dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
+                dialogue = {100768, 100766, 100767, 100321},
                 name = "heist_rat",
                 priority = 3
             },
             ratdaylight = {
                 routines = {100732},
-                dialogue = {100315, 100316, 100317, 100318, 100319, 100320, 100321},
+                dialogue = {100768, 100766, 100767, 100321},
                 name = "heist_ratdaylight_name",
                 priority = 2
             },
             nail = {
                 routines = {101807},
-                dialogue = {100091, 101968, 101969, 101970},
+                dialogue = {101965, 101966, 101967, 100091},
                 name = "heist_nail",
                 priority = 1
             },
             mex_cooking = {
                 routines = {185989, 186989},
-                dialogue = {185878, 186878, 185879, 186879, 185935, 186935, 185976, 186976, 186036, 187036},
+                dialogue = {185995, 186995, 186037, 187037},
                 name = "heist_mex_cooking",
                 priority = 0
             }
@@ -165,17 +165,32 @@ if not PDCOMod then
             local level_id = Global.level_data and Global.level_data.level_id
 
             if Self.included(level_id) then
+                local MissionScript_CreateElements = MissionScript._create_elements
                 local level_data = mod_data.levels[level_id]
 
-                Hooks:PostHook(MissionScriptElement, "init", "PDCOMod_ElementInit", function(self, _, data)
-                    if data.class == "ElementRandom" and table.contains(level_data.routines, data.id) then
-                        function self:_get_random_elements()
-                            return table.remove(self._unused_randoms, 1)
+                function MissionScript:_create_elements(elements)
+                    local new_elements = MissionScript_CreateElements(self, elements)
+
+                    for _, id in ipairs(level_data.routines) do
+                        local element = new_elements[id]
+
+                        if type(element) == "table" then
+                            function element:_get_random_elements()
+                                return table.remove(self._unused_randoms, 1)
+                            end
                         end
-                    elseif data.class == "ElementDialogue" and table.contains(level_data.dialogue, data.id) then
-                        self:set_enabled(false)
                     end
-                end)
+
+                    for _, id in ipairs(level_data.dialogue) do
+                        local element = new_elements[id]
+
+                        if type(element) == "table" then
+                            element:set_enabled(false)
+                        end
+                    end
+
+                    return new_elements
+                end
             end
         end
     end

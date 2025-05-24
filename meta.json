@@ -1,8 +1,8 @@
 [
     {
         "ident" : "PDCOMod-by-Jindetta",
-        "hash" : "2ec920f96dcc7a62a3f3ff1f353ad0e7dd8837016f3c548ebb2215ed27ea6043",
+        "hash" : "013c6cdb75a4e374515bbb4f8404024b213f97c1d8143443d035be130ece1e79",
         "patchnotes_url" : "https://github.com/Jindetta/PD2-Predetermined-Cook-Order/commits/master",
-        "download_url" : "https://github.com/Jindetta/PD2-Predetermined-Cook-Order/releases/download/release%2F1.31/Predeternimed.Cook.Order.zip"
+        "download_url" : "https://github.com/Jindetta/PD2-Predetermined-Cook-Order/releases/download/release%2F1.35/Predeternimed.Cook.Order.zip"
     }
 ]
